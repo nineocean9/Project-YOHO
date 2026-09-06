@@ -1,0 +1,35 @@
+{
+  "manifestVersion": "1.0",
+  "generatedAt": "2026-09-06",
+  "project": "Project-YOHO",
+  "upstream": {
+    "name": "YOHO",
+    "repository": "https://github.com/lhaippp/YOHO",
+    "commit": null,
+    "commitStatus": "pending-independent-verification",
+    "license": "MIT",
+    "licenseSha256": null,
+    "licenseStatus": "pending-source-import"
+  },
+  "migrationSource": {
+    "path": "F:/YOHO-Manager",
+    "access": "read-only",
+    "cleanHeadCommit": "20e4f546a5d86369da5acb10b669524e34317a04",
+    "workingTreeStatus": "dirty-untrusted-candidate-layer",
+    "remoteOperationsAllowed": false
+  },
+  "imports": [],
+  "dataAndWeights": {
+    "medicalDataAllowed": false,
+    "modelWeightsAllowed": false,
+    "status": "blocked-pending-rights-review"
+  },
+  "review": {
+    "status": "deferred-until-source-import",
+    "deferredGates": [
+      "Verify the exact upstream commit and MIT license text before importing source.",
+      "Approve a per-file import list and distinguish upstream, fork-modified, and new files.",
+      "Confirm medical-data and model-weight rights separately before use or redistribution."
+    ]
+  }
+}

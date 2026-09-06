@@ -1,0 +1,19 @@
+# Third-party notices
+
+Project-YOHO is an engineering and productization project built on the YOHO research implementation.
+
+## YOHO
+
+- Project: Single-Image-Based Deep Learning for Segmentation of Early Esophageal Cancer Lesions
+- Upstream repository: https://github.com/lhaippp/YOHO
+- License: MIT License
+- Copyright: Copyright (c) 2023 Li Haipeng
+- Paper: Haipeng Li, Dingrui Liu, Yu Zeng, Shuaicheng Liu, Tao Gan, Nini Rao, Jinlin Yang, and Bing Zeng, “Single-Image-Based Deep Learning for Segmentation of Early Esophageal Cancer Lesions,” arXiv:2306.05912; IEEE Transactions on Image Processing, 2024.
+
+The upstream license text and a source manifest must be included when upstream source is imported. M0 has created the provenance manifest structure, but no upstream source is imported and the exact upstream commit and license hash remain blocked pending independent verification. The YOHO method, eUNet architecture, upstream implementation, paper figures, and paper-reported metrics are not original contributions of Project-YOHO.
+
+## Dataset notice
+
+Code licensing does not automatically grant rights to medical datasets. EEC-2022 and any other medical data must be reviewed separately for access, redistribution, research, commercial-use, ethics, and privacy constraints before inclusion or use.
+
+This repository must only contain synthetic, fully de-identified, or explicitly redistributable fixtures.

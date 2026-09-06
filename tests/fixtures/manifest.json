@@ -1,0 +1,46 @@
+{
+  "manifestVersion": "1.0",
+  "generatedAt": "2026-09-06",
+  "generator": "tests/fixtures/generate_fixtures.py",
+  "fixtures": [
+    {
+      "path": "generated/synthetic-geometric-rgb.png",
+      "sourceType": "generated",
+      "license": "Project-YOHO synthetic fixture",
+      "purpose": "Deterministic RGB image import and preview",
+      "sha256": "ffa206b968ed91279f9bc56d18b820d70cc66a405bc94c131e2da0d526c84268",
+      "mediaType": "image/png",
+      "dimensions": {
+        "width": 64,
+        "height": 48
+      },
+      "expectedBehavior": "64x48 RGB PNG with a centered geometric region",
+      "reviewStatus": "synthetic-approved"
+    },
+    {
+      "path": "generated/synthetic-geometric-mask.png",
+      "sourceType": "generated",
+      "license": "Project-YOHO synthetic fixture",
+      "purpose": "Deterministic binary ROI mask validation",
+      "sha256": "bd06c860277c774f4c2d1e2a0bab124c3bf9bb3ae82aca74022bf2ceffe6e5b2",
+      "mediaType": "image/png",
+      "dimensions": {
+        "width": 64,
+        "height": 48
+      },
+      "expectedBehavior": "64x48 grayscale mask with a centered circular foreground",
+      "reviewStatus": "synthetic-approved"
+    },
+    {
+      "path": "generated/synthetic-case.json",
+      "sourceType": "generated",
+      "license": "Project-YOHO synthetic fixture",
+      "purpose": "Domain relationship and ROI behavior examples",
+      "sha256": "92b125cc2162452af3fa4ba46328516498233b5016ba1bc966dde6a0ed1dd0c7",
+      "mediaType": "application/json",
+      "dimensions": null,
+      "expectedBehavior": "Fictitious patient, examination and image metadata only",
+      "reviewStatus": "synthetic-approved"
+    }
+  ]
+}

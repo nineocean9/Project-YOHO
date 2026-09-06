@@ -1,0 +1,54 @@
+# Secrets and generated files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.secret
+
+# Dependencies and build output
+node_modules/
+dist/
+out/
+coverage/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+target/
+.gradle/
+
+# Local data and runtime state
+*.db
+*.sqlite
+*.sqlite3
+*.log
+logs/
+data/
+artifacts/
+patients/
+models/
+datasets/
+
+# Medical and large binary data
+*.dcm
+*.nii
+*.nii.gz
+*.pth
+*.pt
+*.onnx
+*.h5
+*.hdf5
+
+# Tool and IDE state
+.vscode/
+.idea/
+.obsidian/
+.DS_Store
+Thumbs.db
+
+# Electron packaging
+electron-builder.yml
+release/

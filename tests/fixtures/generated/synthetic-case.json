@@ -1,0 +1,35 @@
+{
+  "fixtureVersion": "1.0",
+  "synthetic": true,
+  "patient": {
+    "id": "pat_00000000-0000-7000-8000-000000000001",
+    "displayCode": "SYNTHETIC-PATIENT-001",
+    "displayName": "Synthetic Example"
+  },
+  "examination": {
+    "id": "exam_00000000-0000-7000-8000-000000000001",
+    "patientId": "pat_00000000-0000-7000-8000-000000000001",
+    "performedAt": "2026-01-01T00:00:00Z"
+  },
+  "image": {
+    "id": "img_00000000-0000-7000-8000-000000000001",
+    "examinationId": "exam_00000000-0000-7000-8000-000000000001",
+    "file": "synthetic-geometric-rgb.png",
+    "roiMask": "synthetic-geometric-mask.png",
+    "width": 64,
+    "height": 48,
+    "mediaType": "image/png"
+  },
+  "expectedBehavior": {
+    "roiIsClosed": true,
+    "reverseRoi": false,
+    "foregroundCenter": [
+      32,
+      24
+    ],
+    "backgroundCorner": [
+      0,
+      0
+    ]
+  }
+}
