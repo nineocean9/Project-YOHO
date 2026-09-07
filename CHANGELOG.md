@@ -4,6 +4,14 @@
 
 ## Unreleased
 
+### M2 — Data foundation
+
+- 新增受控 ArtifactStore，提供 SHA-256 校验、原子提交、owner 校验、损坏隔离、软删除和显式回收。
+- 新增 SQLite Repository、事务 migration/rollback、revision 乐观并发和 Artifact 元数据持久化。
+- 新增幂等 legacy DTO 导入与可重复报告，明确禁止由快照缺失推断删除。
+- 使用合成 fixture 覆盖数据保护失败路径，并完成 M3 Standalone 应用闭环交接。
+- 固定合成 JSON fixture 使用 LF 字节写入并更新哈希，确保 M0 验证可在全新 Windows checkout 中复现。
+
 ### M1 — Contracts and domain model
 
 - 建立 JSON Schema Draft 2020-12 canonical contracts，冻结 `1.0.0` 版本、领域资源、状态转换与隐私规则。

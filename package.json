@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "packages/contracts"
+    "packages/contracts",
+    "packages/data-foundation"
   ],
   "scripts": {
     "contracts:validate": "npm run validate --workspace @project-yoho/contracts",
-    "contracts:test": "npm test --workspace @project-yoho/contracts"
+    "contracts:test": "npm test --workspace @project-yoho/contracts",
+    "data:test": "npm test --workspace @project-yoho/data-foundation"
   },
   "engines": {
     "node": ">=24 <25",

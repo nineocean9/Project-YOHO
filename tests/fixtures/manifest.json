@@ -36,7 +36,7 @@
       "sourceType": "generated",
       "license": "Project-YOHO synthetic fixture",
       "purpose": "Domain relationship and ROI behavior examples",
-      "sha256": "92b125cc2162452af3fa4ba46328516498233b5016ba1bc966dde6a0ed1dd0c7",
+      "sha256": "a3d6ff59cf2bcde6b1ebd21e50276891d155b0386913fc67fb00b4fc8c5d5e8c",
       "mediaType": "application/json",
       "dimensions": null,
       "expectedBehavior": "Fictitious patient, examination and image metadata only",

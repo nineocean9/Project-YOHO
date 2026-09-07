@@ -1,0 +1,1 @@
+{"name":"@project-yoho/data-foundation","version":"0.1.0","private":true,"type":"module","exports":"./src/index.mjs","scripts":{"test":"node --test"},"engines":{"node":">=24 <25"}}

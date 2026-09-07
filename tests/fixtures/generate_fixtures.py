@@ -87,7 +87,9 @@ def write_metadata(path: Path) -> None:
             "backgroundCorner": [0, 0],
         },
     }
-    path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    # Write bytes explicitly so Windows does not translate LF to CRLF. The
+    # repository enforces LF, and fixture hashes must survive a fresh checkout.
+    path.write_bytes((json.dumps(metadata, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
 
 
 def main() -> None:
