@@ -2,7 +2,9 @@
 
 ## 状态
 
-**Planned**
+**Superseded by `M3-Standalone-应用闭环.md`**
+
+> 此文档保留为历史拆分参考，不再作为执行入口；其职责已并入整合后的 M3 Standalone 应用闭环阶段。
 
 ## 目标
 

@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-yoho.dev/contracts/1.0.0/domain/resources.schema.json",
+  "title": "Project-YOHO domain resources",
+  "$defs": {
+    "patient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["patientId", "displayCode", "revision", "status", "createdAt", "updatedAt"],
+      "properties": {
+        "patientId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "displayCode": { "type": "string", "minLength": 1, "maxLength": 64, "x-privacy-class": "sensitive" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 128, "x-privacy-class": "direct-identifier" },
+        "externalReference": { "type": "string", "minLength": 1, "maxLength": 128, "x-privacy-class": "direct-identifier" },
+        "revision": { "$ref": "common.schema.json#/$defs/revision" },
+        "status": { "enum": ["active", "archived"] },
+        "createdAt": { "$ref": "common.schema.json#/$defs/utcDateTime" },
+        "updatedAt": { "$ref": "common.schema.json#/$defs/utcDateTime" }
+      }
+    },
+    "examination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["examinationId", "patientId", "revision", "status", "createdAt", "updatedAt"],
+      "properties": {
+        "examinationId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "patientId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "performedAt": { "$ref": "common.schema.json#/$defs/utcDateTime" },
+        "scopeType": { "type": "string", "minLength": 1, "maxLength": 64, "x-privacy-class": "clinical" },
+        "revision": { "$ref": "common.schema.json#/$defs/revision" },
+        "status": { "enum": ["active", "archived"] },
+        "createdAt": { "$ref": "common.schema.json#/$defs/utcDateTime" },
+        "updatedAt": { "$ref": "common.schema.json#/$defs/utcDateTime" }
+      }
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["imageId", "examinationId", "sourceArtifactId", "widthPixels", "heightPixels", "mediaType", "revision", "status", "createdAt", "updatedAt"],
+      "properties": {
+        "imageId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "examinationId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "sourceArtifactId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "widthPixels": { "type": "integer", "minimum": 1 },
+        "heightPixels": { "type": "integer", "minimum": 1 },
+        "mediaType": { "type": "string", "pattern": "^image/[a-z0-9.+-]+$" },
+        "revision": { "$ref": "common.schema.json#/$defs/revision" },
+        "status": { "enum": ["imported", "annotation-in-progress", "annotation-completed", "archived"] },
+        "createdAt": { "$ref": "common.schema.json#/$defs/utcDateTime" },
+        "updatedAt": { "$ref": "common.schema.json#/$defs/utcDateTime" }
+      }
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["xPixels", "yPixels"],
+      "properties": {
+        "xPixels": { "type": "number", "minimum": 0 },
+        "yPixels": { "type": "number", "minimum": 0 }
+      }
+    },
+    "samplePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["xPixels", "yPixels", "kind", "sequence"],
+      "properties": {
+        "xPixels": { "type": "number", "minimum": 0 },
+        "yPixels": { "type": "number", "minimum": 0 },
+        "kind": { "enum": ["foreground", "background"] },
+        "sequence": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "annotationVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["annotationVersionId", "imageId", "version", "status", "reverseRoi", "roi", "samples", "createdAt"],
+      "properties": {
+        "annotationVersionId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "imageId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "version": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["draft", "completed"] },
+        "reverseRoi": { "type": "boolean" },
+        "roi": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["closed", "coordinateSystem", "points"],
+          "properties": {
+            "closed": { "const": true },
+            "coordinateSystem": { "const": "image-pixels-top-left" },
+            "points": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/point" } }
+          }
+        },
+        "samples": { "type": "array", "items": { "$ref": "#/$defs/samplePoint" } },
+        "maskArtifactId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "createdAt": { "$ref": "common.schema.json#/$defs/utcDateTime" },
+        "completedAt": { "$ref": "common.schema.json#/$defs/utcDateTime" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+          "then": { "required": ["completedAt"] }
+        }
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifactId", "ownerType", "ownerId", "mediaType", "sizeBytes", "sha256", "status", "createdAt"],
+      "properties": {
+        "artifactId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "ownerType": { "enum": ["patient", "examination", "image", "annotation", "dataset", "model", "prediction", "report", "task"] },
+        "ownerId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "mediaType": { "type": "string", "minLength": 3, "maxLength": 128 },
+        "sizeBytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "status": { "enum": ["staged", "available", "quarantined", "deleted"] },
+        "createdAt": { "$ref": "common.schema.json#/$defs/utcDateTime" }
+      }
+    },
+    "datasetVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["datasetVersionId", "annotationVersionId", "version", "status", "createdAt"],
+      "properties": {
+        "datasetVersionId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "annotationVersionId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "version": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["generating", "completed", "failed", "archived"] },
+        "manifestArtifactId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "createdAt": { "$ref": "common.schema.json#/$defs/utcDateTime" },
+        "completedAt": { "$ref": "common.schema.json#/$defs/utcDateTime" }
+      }
+    },
+    "modelVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["modelVersionId", "datasetVersionId", "version", "status", "createdAt"],
+      "properties": {
+        "modelVersionId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "datasetVersionId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "version": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["training", "completed", "failed", "archived"] },
+        "weightsArtifactId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "evaluationManifestArtifactId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "createdAt": { "$ref": "common.schema.json#/$defs/utcDateTime" },
+        "completedAt": { "$ref": "common.schema.json#/$defs/utcDateTime" }
+      }
+    },
+    "predictionResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["predictionResultId", "imageId", "modelVersionId", "status", "createdAt"],
+      "properties": {
+        "predictionResultId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "imageId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "modelVersionId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "status": { "enum": ["completed", "reviewed", "archived"] },
+        "maskArtifactId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "reviewDecision": { "enum": ["accepted", "rejected", "needs-revision"] },
+        "createdAt": { "$ref": "common.schema.json#/$defs/utcDateTime" },
+        "reviewedAt": { "$ref": "common.schema.json#/$defs/utcDateTime" }
+      }
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["taskId", "taskType", "status", "revision", "createdAt", "updatedAt"],
+      "properties": {
+        "taskId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "taskType": { "enum": ["sample", "generate-dataset", "train", "predict", "evaluate", "export-report"] },
+        "status": { "enum": ["queued", "running", "cancellation-requested", "completed", "failed", "cancelled"] },
+        "progressRatio": { "$ref": "common.schema.json#/$defs/ratio" },
+        "revision": { "$ref": "common.schema.json#/$defs/revision" },
+        "createdAt": { "$ref": "common.schema.json#/$defs/utcDateTime" },
+        "updatedAt": { "$ref": "common.schema.json#/$defs/utcDateTime" }
+      }
+    },
+    "auditEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auditEventId", "action", "resourceType", "resourceId", "actorId", "occurredAt", "correlationId"],
+      "properties": {
+        "auditEventId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "action": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+        "resourceType": { "type": "string", "pattern": "^[a-z][a-z0-9-]+$" },
+        "resourceId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "actorId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "occurredAt": { "$ref": "common.schema.json#/$defs/utcDateTime" },
+        "correlationId": { "$ref": "common.schema.json#/$defs/correlationId" }
+      }
+    },
+    "user": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["userId", "displayName", "status", "roleIds"],
+      "properties": {
+        "userId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 128, "x-privacy-class": "sensitive" },
+        "status": { "enum": ["active", "disabled"] },
+        "roleIds": { "type": "array", "uniqueItems": true, "items": { "$ref": "common.schema.json#/$defs/opaqueId" } }
+      }
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roleId", "name", "permissions"],
+      "properties": {
+        "roleId": { "$ref": "common.schema.json#/$defs/opaqueId" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "permissions": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" } }
+      }
+    }
+  }
+}

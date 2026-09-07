@@ -1,9 +1,8 @@
 # Deployment
 
-Deployment assets will be introduced only by their owning module:
+Deployment assets are intentionally staged with the consolidated roadmap:
 
-- M8 may add Spring Boot/MySQL development services.
-- M9 may add Standalone/LAN mode configuration.
-- M10 may add packaging, CI and reproducible deployment assets.
+- M4 may add Spring Boot/MySQL development services and explicit LAN configuration.
+- M4 may add Standalone/LAN mode selection, packaging, CI and reproducible deployment assets after both adapters are verified.
 
-Do not add default credentials, real patient data, production certificates or unverified infrastructure claims.
+M2 and M3 must not add production deployment claims. Local development configuration must not contain default passwords, patient data, credentials or machine-specific absolute paths.

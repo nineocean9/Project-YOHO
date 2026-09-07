@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "requestId": "req_00000000-0000-7000-8000-000000000001",
+  "operation": "train",
+  "taskId": "task_00000000-0000-7000-8000-000000000001",
+  "correlationId": "corr_SYNTHETIC001",
+  "inputs": [
+    {
+      "artifactId": "artifact_00000000-0000-7000-8000-000000000001",
+      "role": "dataset-manifest"
+    }
+  ],
+  "parameters": {}
+}

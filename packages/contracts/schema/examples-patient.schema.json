@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-yoho.dev/contracts/1.0.0/examples/patient.schema.json",
+  "title": "Patient example",
+  "$ref": "../domain/resources.schema.json#/$defs/patient"
+}

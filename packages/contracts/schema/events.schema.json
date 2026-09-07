@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-yoho.dev/contracts/1.0.0/events.schema.json",
+  "title": "Project-YOHO domain events",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "eventId", "eventType", "occurredAt", "correlationId", "aggregateType", "aggregateId", "sequence", "payload"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "eventId": { "$ref": "domain/common.schema.json#/$defs/opaqueId" },
+    "eventType": { "enum": ["TaskQueued", "TaskStarted", "TaskProgress", "ArtifactCreated", "TaskCompleted", "TaskFailed", "TaskCancelled", "AnnotationCompleted", "DatasetGenerated", "ModelArchived", "PredictionCompleted", "PredictionReviewed"] },
+    "occurredAt": { "$ref": "domain/common.schema.json#/$defs/utcDateTime" },
+    "correlationId": { "$ref": "domain/common.schema.json#/$defs/correlationId" },
+    "aggregateType": { "type": "string", "pattern": "^[a-z][a-z0-9-]+$" },
+    "aggregateId": { "$ref": "domain/common.schema.json#/$defs/opaqueId" },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "payload": { "type": "object", "additionalProperties": false }
+  }
+}

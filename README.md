@@ -108,7 +108,7 @@ Project-YOHO/
 ├── packages/contracts/           # 唯一跨模块契约源
 ├── docs/
 │   ├── contracts/README.md
-│   ├── modules/                  # M0-M10 模块说明和交接
+│   ├── modules/                  # M0-M4 阶段说明和交接
 │   └── adr/                      # 已确认架构决策
 ├── tests/fixtures/               # 仅脱敏/合成/授权样例
 ├── deploy/                       # 开发与部署配置
@@ -122,52 +122,46 @@ Project-YOHO/
 
 必须按顺序实施，不允许单个聊天窗口跨多个模块大范围开发。
 
-| 编号 | 模块 | 主要输出 | 状态 |
+| 编号 | 阶段 | 主要输出 | 状态 |
 |---|---|---|---|
 | M0 | 项目初始化与基线保护 | 仓库骨架、归属、基线和依赖清单 | Complete |
-| M1 | 契约与领域模型 | Domain/Command/Query/Event/Error/API 契约 | **Next** |
-| M2 | ArtifactStore | 受控文件存储和安全测试 | Planned |
-| M3 | SQLite 与迁移 | 本地权威数据源和旧数据导入 | Planned |
-| M4 | Python Worker 与评测 | 任务协议、算法适配、真实指标管线 | Planned |
-| M5 | Electron Main/Preload | 安全 typed IPC 与本地任务服务 | Planned |
-| M6 | Vue 3 + TypeScript 基础 | Vite、Router、Pinia、API adapter | Planned |
-| M7 | Vue 业务模块迁移 | 患者到报告的垂直功能 | Planned |
-| M8 | Spring Boot 服务端 | REST、MySQL、RBAC、审计、SSE | Planned |
-| M9 | Standalone/LAN 适配 | 统一 Application Port 双实现 | Planned |
-| M10 | 测试、CI、打包和文档 | 自动验证与可复现交付 | Planned |
+| M1 | 契约与领域模型 | Domain/Command/Query/Event/Error/API 契约 | Complete |
+| M2 | 数据基础 | ArtifactStore、SQLite、迁移与数据保护 | **Next** |
+| M3 | Standalone 应用闭环 | Python Worker、Electron、Vue 与离线业务闭环 | Planned |
+| M4 | LAN 与统一交付 | Spring Boot/MySQL、双模式适配、CI、打包与文档 | Planned |
 
-各模块的详细目标、非目标、修改权限、契约、测试和交接见 `docs/modules/`。
+阶段内部仍按依赖顺序小步实施和验证，但不再把每个技术组件单独升级为项目里程碑。详细目标、非目标、修改权限、契约、测试和交接见 `docs/modules/M0-*`、`M1-*` 及整合后的 `M2-数据基础.md`、`M3-Standalone-应用闭环.md`、`M4-LAN-与统一交付.md`。原 M2-M10 文档仅保留为历史拆分参考，不再作为执行入口。
 
 ## 9. 每个新聊天窗口的工作协议
 
-向新 agent 提交任务时，必须包含当前模块编号，并要求执行以下步骤：
+向新 agent 提交任务时，必须包含当前阶段编号，并要求执行以下步骤：
 
 1. 先阅读 `README.md`、`docs/contracts/README.md` 和当前 `docs/modules/Mx-*.md`。
-2. 检查 Git 状态和上一模块“交接给下一模块”章节，不覆盖他人未提交修改。
-3. 只修改当前模块允许的目录，不提前实现下一模块。
-4. 不自行新增平行 API；需要新接口时先更新 contracts、版本和契约测试。
+2. 检查 Git 状态和上一阶段“交接给下一阶段”章节，不覆盖他人未提交修改。
+3. 只修改当前阶段允许的目录，不提前实现下一阶段。
+4. 阶段内部按文档给定顺序小步实现和验证；不自行新增平行 API，需要新接口时先更新 contracts、版本和契约测试。
 5. 完成测试与真实运行验证，记录实际命令和结果。
-6. 更新当前模块状态、CHANGELOG 和交接章节后停止。
+6. 更新当前阶段状态、CHANGELOG 和交接章节后停止。
 7. 代码修改完毕后询问是否提交并推送 GitHub，不得擅自提交或推送。
 
 推荐的新窗口启动提示：
 
 ```text
-请在 F:/Project-YOHO 实施 Mx 模块。先阅读 README.md、docs/contracts/README.md、
-docs/modules/Mx-*.md 以及上一模块交接记录。严格遵守 contracts-first 和目录边界，
-只完成当前模块；运行验收测试并更新模块交接文档，不要开始下一模块。
+请在 F:/Project-YOHO 实施 Mx 阶段。先阅读 README.md、docs/contracts/README.md、
+docs/modules/Mx-*.md 以及上一阶段交接记录。严格遵守 contracts-first 和目录边界，
+只完成当前阶段；按阶段文档中的内部顺序实现并验证，不要开始下一阶段。
 ```
 
-## 10. 模块完成定义
+## 10. 阶段完成定义
 
-每个模块同时满足以下条件才算完成：
+每个阶段同时满足以下条件才算完成：
 
 - 目标功能已实现，非目标未越界实现。
 - 已定义/复用的接口、事件与错误码有 schema 和示例。
 - 自动化测试通过，并记录真实验证命令和结果。
 - 数据库/文件格式变化有迁移和回退说明。
 - 无真实患者数据、明文凭据或无许可资产进入仓库。
-- 模块文档已填写修改文件、已知限制和下一模块前置条件。
+- 阶段文档已填写修改文件、已知限制和下一阶段前置条件。
 - CHANGELOG 已更新。
 - 对外接口无未说明的破坏性变化。
 
@@ -194,7 +188,7 @@ docs/modules/Mx-*.md 以及上一模块交接记录。严格遵守 contracts-fir
 
 ## 13. 当前阶段
 
-**M0：项目初始化与基线保护已完成。下一模块为 M1：契约与领域模型。**
+**M1：契约与领域模型已完成。下一阶段为 M2：数据基础。**
 
 M0 已完成：
 

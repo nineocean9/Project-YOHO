@@ -4,10 +4,17 @@
 
 ## Unreleased
 
+### M1 — Contracts and domain model
+
+- 建立 JSON Schema Draft 2020-12 canonical contracts，冻结 `1.0.0` 版本、领域资源、状态转换与隐私规则。
+- 建立 command/query/event/error/Worker envelope、IPC/HTTP Application Port 映射、合成示例与自动化验证。
+- 新增契约发布 ADR，并完成 M2 数据基础交接。
+- 将原 M2-M10 技术组件里程碑整合为 M2 数据基础、M3 Standalone 应用闭环、M4 LAN 与统一交付；职责与 contracts-first 依赖不变。
+
 ### M0 — Project initialization
 
 - 建立 Project-YOHO 企业级重构总 README。
-- 定义 M0-M10 模块顺序、contracts-first 规则和新聊天窗口交接流程。
+- 定义初始 M0-M10 模块顺序、contracts-first 规则和新聊天窗口交接流程；该路线图已在 M1 完成后整合为 M0-M4。
 - 建立 contracts、modules、ADR、fixtures 和 deploy 文档目录骨架。
 - 明确 YOHO 上游归属、论文指标与本地实测指标边界。
 - 指定 `F:/YOHO-Manager` 为只读基线，`F:/Project-YOHO` 为重构目录。

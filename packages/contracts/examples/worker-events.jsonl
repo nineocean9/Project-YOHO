@@ -1,0 +1,4 @@
+{"schemaVersion":"1.0.0","event":"started","requestId":"req_00000000-0000-7000-8000-000000000001","taskId":"task_00000000-0000-7000-8000-000000000001","correlationId":"corr_SYNTHETIC001","sequence":1}
+{"schemaVersion":"1.0.0","event":"progress","requestId":"req_00000000-0000-7000-8000-000000000001","taskId":"task_00000000-0000-7000-8000-000000000001","correlationId":"corr_SYNTHETIC001","sequence":2,"progressRatio":0.5}
+{"schemaVersion":"1.0.0","event":"artifact-produced","requestId":"req_00000000-0000-7000-8000-000000000001","taskId":"task_00000000-0000-7000-8000-000000000001","correlationId":"corr_SYNTHETIC001","sequence":3,"artifact":{"artifactId":"artifact_00000000-0000-7000-8000-000000000002","role":"model-weights"}}
+{"schemaVersion":"1.0.0","event":"completed","requestId":"req_00000000-0000-7000-8000-000000000001","taskId":"task_00000000-0000-7000-8000-000000000001","correlationId":"corr_SYNTHETIC001","sequence":4}

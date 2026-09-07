@@ -4,132 +4,61 @@
 
 `packages/contracts` 是 Project-YOHO 唯一跨模块契约源。Electron IPC、Spring REST/SSE、Vue 客户端、Repository adapter 和 Python Worker 必须围绕同一业务语义实现，禁止各自创建不兼容 API。
 
-当前状态：**M0 文档骨架；所有业务契约均未冻结。** M1 将完成正式设计和契约测试。
+## M1 冻结版本与规则
 
-## 契约层级
+- 契约版本为 `1.0.0`，canonical schema 使用 JSON Schema Draft 2020-12。
+- schema 的 `$id` 使用 `https://project-yoho.dev/contracts/1.0.0/` 稳定 URI；新增可选字段属于兼容变更，删除、改名或改变含义必须升级版本并更新测试。
+- ID 是带资源前缀的不透明 UUID 字符串，由 application service 生成；客户端不解析 ID，也不以 ID 拼接路径。
+- 时间统一为带 `Z` 的 ISO 8601 UTC；比例字段为 0 到 1 的 fraction。
+- 可变资源使用 `revision` 和 `expectedRevision`（由具体 command payload 承载）；重复 command 使用 `idempotencyKey`。
+- 患者显示名与外部标识标注为敏感字段；错误、事件与日志不得返回姓名、病历号、绝对路径、堆栈或原始 Worker stderr。
+- 文件只通过 `artifactId` 与受控 artifact reference 传递。canonical contract 不接受任意绝对路径、脚本名或通用文件 API。
+- completed annotation/version 和 task 终态不可逆；删除采用归档/受控生命周期，不表示从快照缺失即物理删除。
 
-```text
-Domain Vocabulary
-  ├── Commands       改变状态，返回 accepted/result
-  ├── Queries        只读查询，禁止副作用
-  ├── Events         已发生事实，不作为命令使用
-  ├── Errors         跨进程统一失败语义
-  ├── Application Port
-  │     ├── Electron IPC adapter
-  │     └── Spring HTTP/SSE adapter
-  └── Worker Contract
-        └── Python JSON request / JSONL event
-```
-
-## 计划目录
+## 目录
 
 ```text
 packages/contracts/
-├── domain/
-├── commands/
-├── queries/
-├── events/
-├── errors/
-├── ipc/
-├── http/
-├── worker/
-├── database/
-├── examples/
-└── tests/
+├── schema/domain/common.schema.json       # ID、时间、比例、artifact reference
+├── schema/domain/resources.schema.json    # 领域资源与隐私标注
+├── schema/domain/state-transitions.mjs    # 允许的状态转换
+├── schema/envelopes.schema.json            # command/query/event/error/worker envelope
+├── schema/events.schema.json               # 领域事件类型目录
+├── schema/api/operation-manifest.json      # Application Port 的 IPC/HTTP 映射
+├── examples/                               # 合成有效样例（无真实数据）
+├── scripts/                                # Ajv 验证入口
+└── tests/                                  # schema 与语义契约测试
 ```
 
-目录将在 M1 根据选定的 schema 工具创建。M0 不提前写伪契约。
+## Application Port 映射
 
-## 领域对象范围
+`schema/api/operation-manifest.json` 是操作目录。每个 command/query 同时具有白名单 IPC channel 和 `/api/v1/` HTTP route，并引用同一个 envelope schema。IPC 与 REST/SSE 是同一 Application Port 的 adapter；M1 不实现 adapter。
 
-- Patient
-- Examination
-- Image
-- AnnotationVersion
-- DatasetVersion
-- ModelVersion
-- PredictionResult
-- Artifact
-- Task
-- AuditEvent
-- User / Role（LAN 模式）
+长任务 command 立即返回 task reference，状态通过统一 event envelope 传递。SSE consumer 使用事件 `eventId` 作为 resume 标识，重连和重复事件处理由后续 adapter 实现；M1 不宣称可靠投递。
 
-## Command 范围
+## Worker 协议
 
-- Create/Update/Archive Patient
-- Import/Delete Image
-- Save/Complete ROI
-- Save/Complete Sampling
-- Generate Dataset
-- Train Model
-- Run Prediction
-- Review Prediction
-- Export Report
-- Cancel/Retry Task
+Worker request 使用 `workerRequest` envelope，operation 为 `sample`、`dataset`、`train`、`predict` 或 `evaluate`，输入只能是 artifact references。Worker 输出是一行一个 JSON object 的 JSONL `workerEvent`，包含递增 sequence，且每个 request 只能有一个 terminal event：`completed`、`failed` 或 `cancel-ack`。Worker 不接收权限模型、任意脚本或任意路径。
 
-## Query 范围
+## 领域与状态
 
-- List/Get Patient
-- List/Get Examination and Image
-- List Annotation/Dataset/Model/Prediction Versions
-- Get Task and Task Logs
-- Resolve/Download Artifact
-- Get Report
+领域资源包括 Patient、Examination、Image、AnnotationVersion、DatasetVersion、ModelVersion、PredictionResult、Artifact、Task、AuditEvent、User 和 Role。Annotation 以 draft/completed 区分，ROI 使用闭合的 image-pixel 坐标点，采样使用带 kind/sequence 的 JSON 点，不使用 pickle。模型指标必须由 evaluation manifest artifact 证明，不能由调用方直接提交任意 accuracy。
 
-## Event 范围
+Image、Annotation 和 Task 的允许转换及终态规则位于 `state-transitions.mjs`，并由测试锁定。资源归属通过 owner ID 与 Artifact ownerType/ownerId 表达；后续 ArtifactStore 必须在读写、归档和删除前校验归属。
 
-- TaskQueued / TaskStarted / TaskProgress
-- ArtifactCreated
-- TaskCompleted / TaskFailed / TaskCancelled
-- AnnotationCompleted
-- DatasetGenerated
-- ModelArchived
-- PredictionCompleted / PredictionReviewed
+## 错误目录
 
-## 统一错误格式
+统一 error envelope 的稳定错误码为：`VALIDATION_FAILED`、`RESOURCE_NOT_FOUND`、`CONFLICT`、`INVALID_STATE_TRANSITION`、`UNAUTHORIZED`、`FORBIDDEN`、`ARTIFACT_OWNERSHIP_VIOLATION`、`TASK_STATE_INVALID`、`WORKER_PROTOCOL_ERROR`、`SERVICE_UNAVAILABLE`、`INTERNAL_ERROR`。message 面向用户，details 只允许结构化安全信息，`retryable` 与 `correlationId` 必须存在。
 
-```json
-{
-  "code": "RESOURCE_NOT_FOUND",
-  "message": "面向用户且不泄漏内部路径的信息",
-  "details": {},
-  "retryable": false,
-  "correlationId": "corr_xxx"
-}
+## 验证
+
+在 Node.js 24 / npm 11 环境执行：
+
+```bash
+npm install
+npm run contracts:validate
+npm run contracts:test
+python scripts/m0/verify.py
 ```
 
-M1 必须建立稳定的错误码目录。模块不得只返回任意字符串或将原始堆栈暴露给 UI。
-
-## API 语义规则
-
-1. ID 使用不透明字符串；客户端不得解析 ID 来拼路径。
-2. 时间统一使用 ISO 8601，必须包含时区或明确采用 UTC。
-3. 比例字段明确单位，例如 `lesionAreaPercent`，不能混用 `0.047` 和 `4.7`。
-4. 枚举只允许契约中声明的值；未知值按兼容策略处理。
-5. Command 应支持幂等键或明确重复提交行为。
-6. 长任务返回 `taskId`，不保持 IPC/HTTP 请求直至训练结束。
-7. 分页、排序和过滤语义在 HTTP 与 IPC adapter 中保持一致。
-8. 事件至少包含 `eventId`、`eventType`、`occurredAt`、`correlationId`、`schemaVersion`。
-9. Python Worker 不接触用户权限；调用方必须先完成权限和资源归属校验。
-10. 文件仅通过 artifact ID 传递，上层不能传任意绝对路径。
-
-## 版本规则
-
-- 初始契约版本由 M1 定义。
-- 增加可选字段属于兼容变更；删除、重命名、改变含义属于破坏性变更。
-- 破坏性变更必须同步更新：schemaVersion、contract tests、adapter、迁移说明、CHANGELOG。
-- 不允许 Vue、Electron、Spring Boot 或 Python 单方面修改字段意义。
-
-## M1 前置问题
-
-M1 必须在编码前明确：
-
-- ID 格式与生成责任。
-- Patient/Examination/Image 的必填字段和隐私分级。
-- Annotation/Dataset/Model 的版本与不可变规则。
-- ImageStatus 和 TaskStatus 的合法转换。
-- Standalone 与 LAN 共用的 Application Port。
-- Artifact URI/ID 的传递方式。
-- 幂等、分页、并发版本和错误码策略。
-- REST endpoint、SSE resume、IPC channel 映射。
-- Worker 请求和事件的 schema version。
+M1 只验证契约和协议，不启动后续 Worker、数据库、Electron、Vue 或 Spring 实现。

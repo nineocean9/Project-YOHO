@@ -1,0 +1,9 @@
+{
+  "patientId": "pat_00000000-0000-7000-8000-000000000001",
+  "displayCode": "SYNTHETIC-PATIENT-001",
+  "displayName": "Synthetic Example",
+  "revision": 1,
+  "status": "active",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-01T00:00:00Z"
+}

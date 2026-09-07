@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-yoho.dev/contracts/1.0.0/envelopes.schema.json",
+  "title": "Project-YOHO envelopes",
+  "$defs": {
+    "base": {
+      "type": "object",
+      "required": ["schemaVersion", "correlationId"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "correlationId": { "$ref": "domain/common.schema.json#/$defs/correlationId" }
+      }
+    },
+    "command": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": ["commandId", "commandType", "idempotencyKey", "payload"],
+          "properties": {
+            "commandId": { "$ref": "domain/common.schema.json#/$defs/opaqueId" },
+            "commandType": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" },
+            "requestedAt": { "$ref": "domain/common.schema.json#/$defs/utcDateTime" },
+            "idempotencyKey": { "$ref": "domain/common.schema.json#/$defs/idempotencyKey" },
+            "actor": { "$ref": "domain/common.schema.json#/$defs/actorContext" },
+            "payload": { "type": "object" }
+          }
+        }
+      ]
+    },
+    "query": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": ["queryId", "queryType", "payload"],
+          "properties": {
+            "queryId": { "$ref": "domain/common.schema.json#/$defs/opaqueId" },
+            "queryType": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" },
+            "payload": { "type": "object" }
+          }
+        }
+      ]
+    },
+    "event": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": ["eventId", "eventType", "occurredAt", "aggregateType", "aggregateId", "sequence", "payload"],
+          "properties": {
+            "eventId": { "$ref": "domain/common.schema.json#/$defs/opaqueId" },
+            "eventType": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$" },
+            "occurredAt": { "$ref": "domain/common.schema.json#/$defs/utcDateTime" },
+            "aggregateType": { "type": "string", "pattern": "^[a-z][a-z0-9-]+$" },
+            "aggregateId": { "$ref": "domain/common.schema.json#/$defs/opaqueId" },
+            "sequence": { "type": "integer", "minimum": 1 },
+            "payload": { "type": "object" }
+          }
+        }
+      ]
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "details", "retryable", "correlationId"],
+      "properties": {
+        "code": { "enum": ["VALIDATION_FAILED", "RESOURCE_NOT_FOUND", "CONFLICT", "INVALID_STATE_TRANSITION", "UNAUTHORIZED", "FORBIDDEN", "ARTIFACT_OWNERSHIP_VIOLATION", "TASK_STATE_INVALID", "WORKER_PROTOCOL_ERROR", "SERVICE_UNAVAILABLE", "INTERNAL_ERROR"] },
+        "message": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "details": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              { "type": "string" },
+              { "type": "number" },
+              { "type": "boolean" },
+              { "type": "null" }
+            ]
+          }
+        },
+        "retryable": { "type": "boolean" },
+        "correlationId": { "$ref": "domain/common.schema.json#/$defs/correlationId" }
+      }
+    },
+    "workerRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "requestId", "operation", "taskId", "correlationId", "inputs", "parameters"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "requestId": { "$ref": "domain/common.schema.json#/$defs/opaqueId" },
+        "operation": { "enum": ["sample", "dataset", "train", "predict", "evaluate"] },
+        "taskId": { "$ref": "domain/common.schema.json#/$defs/opaqueId" },
+        "correlationId": { "$ref": "domain/common.schema.json#/$defs/correlationId" },
+        "inputs": { "type": "array", "items": { "$ref": "domain/common.schema.json#/$defs/artifactReference" } },
+        "parameters": { "type": "object", "additionalProperties": false }
+      }
+    },
+    "workerEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "event", "requestId", "taskId", "correlationId", "sequence"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "event": { "enum": ["started", "progress", "artifact-produced", "completed", "failed", "cancel-ack"] },
+        "requestId": { "$ref": "domain/common.schema.json#/$defs/opaqueId" },
+        "taskId": { "$ref": "domain/common.schema.json#/$defs/opaqueId" },
+        "correlationId": { "$ref": "domain/common.schema.json#/$defs/correlationId" },
+        "sequence": { "type": "integer", "minimum": 1 },
+        "progressRatio": { "$ref": "domain/common.schema.json#/$defs/ratio" },
+        "artifact": { "$ref": "domain/common.schema.json#/$defs/artifactReference" },
+        "error": { "$ref": "#/$defs/error" }
+      },
+      "allOf": [
+        { "if": { "properties": { "event": { "const": "progress" } } }, "then": { "properties": { "progressRatio": { "$ref": "domain/common.schema.json#/$defs/ratio" } }, "required": ["progressRatio"] } },
+        { "if": { "properties": { "event": { "const": "artifact-produced" } } }, "then": { "properties": { "artifact": { "$ref": "domain/common.schema.json#/$defs/artifactReference" } }, "required": ["artifact"] } },
+        { "if": { "properties": { "event": { "const": "failed" } } }, "then": { "properties": { "error": { "$ref": "#/$defs/error" } }, "required": ["error"] } }
+      ]
+    }
+  }
+}

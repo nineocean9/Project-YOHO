@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-yoho.dev/contracts/1.0.0/domain/common.schema.json",
+  "title": "Project-YOHO common contract types",
+  "$defs": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "utcDateTime": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "opaqueId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*_[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "correlationId": {
+      "type": "string",
+      "pattern": "^corr_[A-Za-z0-9_-]{8,128}$"
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "ratio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifactId", "role"],
+      "properties": {
+        "artifactId": {
+          "$ref": "#/$defs/opaqueId"
+        },
+        "role": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,63}$"
+        }
+      }
+    },
+    "actorContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actorId", "mode"],
+      "properties": {
+        "actorId": {
+          "$ref": "#/$defs/opaqueId"
+        },
+        "mode": {
+          "enum": ["standalone", "lan"]
+        }
+      }
+    }
+  }
+}
